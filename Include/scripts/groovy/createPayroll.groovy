@@ -41,39 +41,41 @@ import cucumber.api.java.en.Given
 import cucumber.api.java.en.Then
 import cucumber.api.java.en.When
 
+import org.openqa.selenium.Keys
 
 
-class login {
-	@Given("User open HRE Website")
-	def openWebsite() {
-		WebUI.openBrowser(GlobalVariable.url)
-		WebUI.maximizeWindow()
-		WebUI.waitForElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='id_email']"), 10)
+class createPayroll {
+	@Given("User click payroll menu and choose team payroll")
+	def clickPayrollMenu() {
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='Payroll']"))
 		WebUI.takeFullPageScreenshot()
-	}
-		
-	@And("User enter (.*) and (.*)")
-	def inputUserPwd(String username, String password) {
-		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='id_email']"), username)
-		WebUI.takeFullPageScreenshot()
-		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='id_password']"), password)
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Team Payroll']"))
 		WebUI.takeFullPageScreenshot()
 	}
 	
-	@When("User click Login Button")
-	def clickLogin() {
-		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Login']"),2)
-		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Login']"))
+	@When("User click Create New Payroll and input data")
+	def clickCreateNew() {
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Create New Payroll']"))
+		WebUI.takeFullPageScreenshot()
+		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='name']"), "Test 01")
+		WebUI.takeFullPageScreenshot()
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Save']"))
+		WebUI.takeFullPageScreenshot()
 	}
 	
-	@Then("User logged in")
-	def loggedIn() {
-		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//h2[@class='m-t-lg']"),2)
-		WebUI.takeFullPageScreenshot()
-		
-//		WebUI.closeBrowser()
+	@And("User search and select employee")
+	def searchEmployee() {
+		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), "Test Employee 1")
+		WebUI.sendKeys(null, Keys.chord(Keys.ENTER))
+		WebUI.delay(5)
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//tbody/tr[2]/td[1]/div[1]/input[1]"))		
 	}
+	
+	
 }
+
+
+
 
 
 
