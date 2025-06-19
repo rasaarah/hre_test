@@ -52,104 +52,104 @@ import internal.GlobalVariable
 
 public class HandleTestData {
 	static String pathDataFile = RunConfiguration.getProjectDir() + "/Data Files/"
-	
-		public List<HashMap> readTestData(String pathFile, String sheetName, boolean isUsingFirstRowAsHeader) throws IOException {
-			int i,j
-			String pathData = RunConfiguration.getProjectDir() + "/Data Files/"
-			String pathFileTestData = pathData + pathFile
-			List<HashMap> listHashMap = new ArrayList<HashMap>()
-	
-			try {
-				TestData data = ExcelFactory.getExcelDataWithDefaultSheet(pathFileTestData, sheetName, isUsingFirstRowAsHeader)
-	
-				List<List<Object>> listAllData = data.getAllData()
-				KeywordUtil.logInfo("Size data : " + listAllData.size())
-	
-				String[] getHeaderColumnName = data.getColumnNames()
-	
-				for (i = 0; i < listAllData.size(); i++) {
-					List<Object> getListData = listAllData.get(i)
-					HashMap<Object, Object> hashMapSetKeyAndValueFromTestData = new HashMap<Object, Object>()
-	
-					for (j = 0; j < getHeaderColumnName.length; j++) {
-						String keyName = getHeaderColumnName[j]
-						String valueData = getListData.get(j)
-	
-						if (!keyName.equals(null) || !keyName.equals("")) {
-							if (valueData.equals(null) && !keyName.equals(null)) {
-								hashMapSetKeyAndValueFromTestData.put(keyName, "")
-							} else {
-								hashMapSetKeyAndValueFromTestData.put(keyName, valueData)
-							}
+
+	public List<HashMap> readTestData(String pathFile, String sheetName, boolean isUsingFirstRowAsHeader) throws IOException {
+		int i,j
+		String pathData = RunConfiguration.getProjectDir() + "/Data Files/"
+		String pathFileTestData = pathData + pathFile
+		List<HashMap> listHashMap = new ArrayList<HashMap>()
+
+		try {
+			TestData data = ExcelFactory.getExcelDataWithDefaultSheet(pathFileTestData, sheetName, isUsingFirstRowAsHeader)
+
+			List<List<Object>> listAllData = data.getAllData()
+			KeywordUtil.logInfo("Size data : " + listAllData.size())
+
+			String[] getHeaderColumnName = data.getColumnNames()
+
+			for (i = 0; i < listAllData.size(); i++) {
+				List<Object> getListData = listAllData.get(i)
+				HashMap<Object, Object> hashMapSetKeyAndValueFromTestData = new HashMap<Object, Object>()
+
+				for (j = 0; j < getHeaderColumnName.length; j++) {
+					String keyName = getHeaderColumnName[j]
+					String valueData = getListData.get(j)
+
+					if (!keyName.equals(null) || !keyName.equals("")) {
+						if (valueData.equals(null) && !keyName.equals(null)) {
+							hashMapSetKeyAndValueFromTestData.put(keyName, "")
+						} else {
+							hashMapSetKeyAndValueFromTestData.put(keyName, valueData)
 						}
 					}
-	
-					listHashMap.add(hashMapSetKeyAndValueFromTestData)
 				}
-			} catch (Exception e) {
-				KeywordUtil.markFailedAndStop(e.getMessage())
+
+				listHashMap.add(hashMapSetKeyAndValueFromTestData)
 			}
-			return listHashMap
+		} catch (Exception e) {
+			KeywordUtil.markFailedAndStop(e.getMessage())
 		}
-		
-		public String readFromCell(String pathFile, String sheetName, int colIndex, int rowIndex) {
-			String pathData = RunConfiguration.getProjectDir() + "/Data Files/";
-			String pathFileTestData = pathData + pathFile;
-			File fileExcel = new File(pathFileTestData);
-			FileInputStream fis = new FileInputStream(fileExcel);
-			XSSFWorkbook workbook = new XSSFWorkbook(fis);
-			XSSFSheet sheet = workbook.getSheet(sheetName);
-	
-			String cellValue = "";
-	
-			try {
-				// Get the specified row and cell
-				Row row = sheet.getRow(rowIndex);
-				Cell cell = (row != null) ? row.getCell(colIndex) : null;
-	
-				// Check if cell is not null and retrieve its value
-				if (cell != null) {
-					switch (cell.getCellType()) {
-						case 1: // Corrected enum usage
-							cellValue = cell.getStringCellValue();
-							break;
-						case 2: // Corrected enum usage
-							cellValue = String.valueOf(cell.getNumericCellValue());
-							break;
-						case 3: // Corrected enum usage
-							cellValue = String.valueOf(cell.getBooleanCellValue());
-							break;
-						case 4: // Corrected enum usage
-							FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-							CellValue evaluatedCellValue = evaluator.evaluate(cell);
-							switch (evaluatedCellValue.getCellType()) {
-								case 1:
-									cellValue = evaluatedCellValue.getStringValue();
-									break;
-								case 2:
-									cellValue = String.valueOf(evaluatedCellValue.getNumberValue());
-									break;
-								case 3:
-									cellValue = String.valueOf(evaluatedCellValue.getBooleanValue());
-									break;
-								default:
-									cellValue = "";
-							}
-							break;
-						default:
-							cellValue = "";
-					}
-				} else {
-					KeywordUtil.logInfo("Cell at row " + rowIndex + ", column " + colIndex + " is empty or null.");
+		return listHashMap
+	}
+
+	public String readFromCell(String pathFile, String sheetName, int colIndex, int rowIndex) {
+		String pathData = RunConfiguration.getProjectDir() + "/Data Files/";
+		String pathFileTestData = pathData + pathFile;
+		File fileExcel = new File(pathFileTestData);
+		FileInputStream fis = new FileInputStream(fileExcel);
+		XSSFWorkbook workbook = new XSSFWorkbook(fis);
+		XSSFSheet sheet = workbook.getSheet(sheetName);
+
+		String cellValue = "";
+
+		try {
+			// Get the specified row and cell
+			Row row = sheet.getRow(rowIndex);
+			Cell cell = (row != null) ? row.getCell(colIndex) : null;
+
+			// Check if cell is not null and retrieve its value
+			if (cell != null) {
+				switch (cell.getCellType()) {
+					case 1: // Corrected enum usage
+						cellValue = cell.getStringCellValue();
+						break;
+					case 2: // Corrected enum usage
+						cellValue = String.valueOf(cell.getNumericCellValue());
+						break;
+					case 3: // Corrected enum usage
+						cellValue = String.valueOf(cell.getBooleanCellValue());
+						break;
+					case 4: // Corrected enum usage
+						FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+						CellValue evaluatedCellValue = evaluator.evaluate(cell);
+						switch (evaluatedCellValue.getCellType()) {
+							case 1:
+								cellValue = evaluatedCellValue.getStringValue();
+								break;
+							case 2:
+								cellValue = String.valueOf(evaluatedCellValue.getNumberValue());
+								break;
+							case 3:
+								cellValue = String.valueOf(evaluatedCellValue.getBooleanValue());
+								break;
+							default:
+								cellValue = "";
+						}
+						break;
+					default:
+						cellValue = "";
 				}
-			} catch (Exception e) {
-				KeywordUtil.logInfo("Error reading cell: " + e.getMessage());
-			} finally {
-				workbook.close();
-				fis.close();
+			} else {
+				KeywordUtil.logInfo("Cell at row " + rowIndex + ", column " + colIndex + " is empty or null.");
 			}
-	
-			return cellValue.trim();
+		} catch (Exception e) {
+			KeywordUtil.logInfo("Error reading cell: " + e.getMessage());
+		} finally {
+			workbook.close();
+			fis.close();
 		}
-	
+
+		return cellValue.trim();
+	}
+
 }

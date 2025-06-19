@@ -23,7 +23,7 @@ import internal.GlobalVariable
 
 public class VerifyElement {
 	boolean result
-	
+
 	def verifyMatch(String actual, String expected) {
 		if (WebUI.verifyMatch(actual.toString().trim(), expected.toString().trim(), false, FailureHandling.OPTIONAL)) {
 			result = true

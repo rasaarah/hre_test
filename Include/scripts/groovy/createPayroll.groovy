@@ -50,20 +50,12 @@ import org.openqa.selenium.Keys
 class createPayroll {
 	HandleTestData handleTestData = new HandleTestData()
 	VerifyElement verifyElement = new VerifyElement()
-	
+
 	String locatorExcel = 'Test Data.xlsx'
 	String sheetName = 'Sheet1'
 	
-	@Given("User click payroll menu and choose team payroll")
-	def clickPayrollMenu() {
-		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='Payroll']"))
-		WebUI.takeFullPageScreenshot()
-		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Team Payroll']"))
-		WebUI.takeFullPageScreenshot()
-	}
-	
-	@When("User click Create New Payroll and input data")
-	def clickCreateNew() {
+	def createNewPayroll() {
+		println("No draft exists, create one")
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Create New Payroll']"))
 		WebUI.takeFullPageScreenshot()
 		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='name']"), "Test 01")
@@ -72,6 +64,43 @@ class createPayroll {
 		WebUI.takeFullPageScreenshot()
 	}
 	
+	@Given("User click payroll menu and choose team payroll")
+	def clickPayrollMenu() {
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='Payroll']"))
+		WebUI.takeFullPageScreenshot()
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Team Payroll']"))
+		WebUI.takeFullPageScreenshot()
+	}
+
+	@When("User click Create New Payroll and input data")
+	def clickCreateNew() {		
+		//Check if there is any draft, if does then delete the draft
+		boolean elementFound = false
+		int index = 1
+	
+		while (true) {
+			String editxpath = "(//span[@class='badge-orange'][normalize-space()='Draft'])[1]"
+			TestObject approvalLimitField = new TestObject().addProperty('xpath', ConditionType.EQUALS, editxpath)
+	
+			if (WebUI.verifyElementPresent(approvalLimitField, 3, FailureHandling.OPTIONAL)) {
+				WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//tbody/tr[1]/td[8]/div[1]//*[name()='svg']//*[name()='path' and contains(@fill,'currentCol')]"))
+				WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[contains(.,'Delete Payroll')]"))
+				WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Delete']"))
+				
+				elementFound = true
+				index++
+			} else {
+				createNewPayroll()
+				break
+			}
+		}
+	
+		if (!elementFound) {
+			createNewPayroll()
+		}
+		
+	}
+
 	def getEmployeeName(HashMap hashDTS) {
 		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), hashDTS.get("Name"))
 		WebUI.takeFullPageScreenshot()
@@ -81,10 +110,10 @@ class createPayroll {
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//tbody/tr[2]/td[1]/div[1]/input[1]"))
 		WebUI.delay(1)
 		WebUI.takeFullPageScreenshot()
-	}	
-	
+	}
+
 	@And("User search and select employee")
-	def searchEmployee() {	
+	def searchEmployee() {
 		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
 
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
@@ -92,7 +121,7 @@ class createPayroll {
 			getEmployeeName(hashDTS)
 		}
 	}
-	
+
 	@And("User click add employees")
 	def addEmployee() {
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
@@ -102,17 +131,17 @@ class createPayroll {
 		WebUI.delay(1)
 		WebUI.takeFullPageScreenshot()
 	}
-	
+
 	@And("User verify Net Payment total")
 	def verifyNetPayment() {
 		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
-		
+
 		double totalNetPayment = 0.0
-		
+
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
 			HashMap hashDTS = listHashMapDTS.get(i)
 			String netPaymentStr = hashDTS.get("Net Payment").toString().replace(",", "").trim()
-		
+
 			if (netPaymentStr.isNumber()) {
 				double netPayment = Double.parseDouble(netPaymentStr)
 				totalNetPayment += netPayment
@@ -121,16 +150,15 @@ class createPayroll {
 				println("Skipping invalid number = " + netPaymentStr)
 			}
 		}
-		
+
 		println("Total Net Payment = " + totalNetPayment)
-				
+
 		String webText = WebUI.getText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='SGD 8,862.75']"), FailureHandling.STOP_ON_FAILURE)
 		String webNumberStr = webText.replaceAll("[^0-9.]", "")
 		double totalNetPaymentWeb = Double.parseDouble(webNumberStr)
-		
+
 		WebUI.verifyEqual(totalNetPayment, totalNetPaymentWeb)
 	}
-	
 }
 
 
