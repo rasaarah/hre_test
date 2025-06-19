@@ -11,6 +11,8 @@ Feature: Create Payroll
   Given User click payroll menu and choose team payroll
   When User click Create New Payroll and input data
   And User search and select employee
+  And User click add employees
+  And User verify Net Payment total
   
   Examples:
   | username  								    | password		 		 |

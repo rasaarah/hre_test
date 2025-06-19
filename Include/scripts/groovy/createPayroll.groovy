@@ -31,6 +31,9 @@ import com.kms.katalon.core.testobject.ResponseObject
 import com.kms.katalon.core.testobject.ConditionType
 import com.kms.katalon.core.testobject.TestObjectProperty
 
+import com.handleElement.HandleTestData
+import com.handleElement.VerifyElement
+
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
 import com.kms.katalon.core.util.KeywordUtil
 
@@ -45,6 +48,12 @@ import org.openqa.selenium.Keys
 
 
 class createPayroll {
+	HandleTestData handleTestData = new HandleTestData()
+	VerifyElement verifyElement = new VerifyElement()
+	
+	String locatorExcel = 'Test Data.xlsx'
+	String sheetName = 'Sheet1'
+	
 	@Given("User click payroll menu and choose team payroll")
 	def clickPayrollMenu() {
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='Payroll']"))
@@ -63,14 +72,64 @@ class createPayroll {
 		WebUI.takeFullPageScreenshot()
 	}
 	
-	@And("User search and select employee")
-	def searchEmployee() {
-		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), "Test Employee 1")
+	def getEmployeeName(HashMap hashDTS) {
+		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), hashDTS.get("Name"))
+		WebUI.takeFullPageScreenshot()
 		WebUI.sendKeys(null, Keys.chord(Keys.ENTER))
-		WebUI.delay(5)
-		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//tbody/tr[2]/td[1]/div[1]/input[1]"))		
+		WebUI.delay(2)
+		WebUI.takeFullPageScreenshot()
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//tbody/tr[2]/td[1]/div[1]/input[1]"))
+		WebUI.delay(1)
+		WebUI.takeFullPageScreenshot()
+	}	
+	
+	@And("User search and select employee")
+	def searchEmployee() {	
+		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
+
+		for (int i = 0; i < listHashMapDTS.size(); i++) {
+			HashMap hashDTS = listHashMapDTS.get(i)
+			getEmployeeName(hashDTS)
+		}
 	}
 	
+	@And("User click add employees")
+	def addEmployee() {
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
+		WebUI.delay(2)
+		WebUI.takeFullPageScreenshot()
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex space-between p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
+		WebUI.delay(1)
+		WebUI.takeFullPageScreenshot()
+	}
+	
+	@And("User verify Net Payment total")
+	def verifyNetPayment() {
+		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
+		
+		double totalNetPayment = 0.0
+		
+		for (int i = 0; i < listHashMapDTS.size(); i++) {
+			HashMap hashDTS = listHashMapDTS.get(i)
+			String netPaymentStr = hashDTS.get("Net Payment").toString().replace(",", "").trim()
+		
+			if (netPaymentStr.isNumber()) {
+				double netPayment = Double.parseDouble(netPaymentStr)
+				totalNetPayment += netPayment
+				println("Net Payment of " + hashDTS.get("Name").toString() + " = " + netPayment)
+			} else {
+				println("Skipping invalid number = " + netPaymentStr)
+			}
+		}
+		
+		println("Total Net Payment = " + totalNetPayment)
+				
+		String webText = WebUI.getText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='SGD 8,862.75']"), FailureHandling.STOP_ON_FAILURE)
+		String webNumberStr = webText.replaceAll("[^0-9.]", "")
+		double totalNetPaymentWeb = Double.parseDouble(webNumberStr)
+		
+		WebUI.verifyEqual(totalNetPayment, totalNetPaymentWeb)
+	}
 	
 }
 
