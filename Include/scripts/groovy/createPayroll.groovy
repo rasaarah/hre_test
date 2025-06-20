@@ -58,9 +58,9 @@ class createPayroll {
 	def createNewPayroll() {
 		String sheetNameTestName = 'Test Name'
 		String randomTestName = RandomStringUtils.randomAlphabetic(8)
-		
+
 		handleTestData.writeToCell(locatorExcel, sheetNameTestName, randomTestName, 0, 1)
-		
+
 		KeywordUtil.logInfo("No draft exists, creating one")
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Create New Payroll']"))
 		WebUI.takeFullPageScreenshot()
@@ -127,9 +127,27 @@ class createPayroll {
 
 	@And("User click add employees")
 	def addEmployee() {
+		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
+		
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
 		WebUI.delay(2)
 		WebUI.takeFullPageScreenshot()
+		
+		//Check if payroll is generated for each employee
+		for (int i = 0; i < listHashMapDTS.size(); i++) {
+			HashMap hashDTS = listHashMapDTS.get(i)
+			String employeeName = hashDTS.get("Name")
+			
+			// Verify element presence on page
+			boolean isPresent = WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "(//span[contains(text(),'" + employeeName + "')])[1]"), 10, FailureHandling.CONTINUE_ON_FAILURE)
+			
+			if (isPresent) {
+				KeywordUtil.logInfo("Employee name '" + employeeName + "' exists on page.")
+			} else {
+				KeywordUtil.logInfo("Employee name '" + employeeName + "' NOT found on page.")
+			}
+		}
+		
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex space-between p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
 		WebUI.delay(1)
 		WebUI.takeFullPageScreenshot()
