@@ -13,6 +13,8 @@ Feature: Create Payroll
   And User search and select employee
   And User click add employees
   And User verify Net Payment total
+  And User click Next to Release Payroll
+  #Then User Logout
   
   Examples:
   | username  								    | password		 		 |

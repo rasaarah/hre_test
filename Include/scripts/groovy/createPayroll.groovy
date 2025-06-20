@@ -55,7 +55,7 @@ class createPayroll {
 	String sheetName = 'Sheet1'
 	
 	def createNewPayroll() {
-		println("No draft exists, create one")
+		KeywordUtil.logInfo("No draft exists, creating one")
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Create New Payroll']"))
 		WebUI.takeFullPageScreenshot()
 		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='name']"), "Test 01")
@@ -74,7 +74,7 @@ class createPayroll {
 
 	@When("User click Create New Payroll and input data")
 	def clickCreateNew() {		
-		//Check if there is any draft, if does then delete the draft
+		//Check if there is any draft, if does then delete the drafts. If doesn't, then create new payroll
 		boolean elementFound = false
 		int index = 1
 	
@@ -93,14 +93,10 @@ class createPayroll {
 				createNewPayroll()
 				break
 			}
-		}
-	
-		if (!elementFound) {
-			createNewPayroll()
-		}
-		
+		}	
 	}
-
+	
+	//Get data based on excel in Data Files, using specific header to locate
 	def getEmployeeName(HashMap hashDTS) {
 		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), hashDTS.get("Name"))
 		WebUI.takeFullPageScreenshot()
@@ -111,7 +107,8 @@ class createPayroll {
 		WebUI.delay(1)
 		WebUI.takeFullPageScreenshot()
 	}
-
+	
+	//Iteration to fetch employee name based on data size in data file used
 	@And("User search and select employee")
 	def searchEmployee() {
 		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
@@ -131,7 +128,8 @@ class createPayroll {
 		WebUI.delay(1)
 		WebUI.takeFullPageScreenshot()
 	}
-
+	
+	//Get total net payment amount based on data file used
 	@And("User verify Net Payment total")
 	def verifyNetPayment() {
 		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
@@ -145,19 +143,58 @@ class createPayroll {
 			if (netPaymentStr.isNumber()) {
 				double netPayment = Double.parseDouble(netPaymentStr)
 				totalNetPayment += netPayment
-				println("Net Payment of " + hashDTS.get("Name").toString() + " = " + netPayment)
+				KeywordUtil.logInfo("Net Payment of " + hashDTS.get("Name").toString() + " = " + netPayment)
 			} else {
-				println("Skipping invalid number = " + netPaymentStr)
+				KeywordUtil.logInfo("Skipping invalid number = " + netPaymentStr)
 			}
 		}
 
-		println("Total Net Payment = " + totalNetPayment)
-
-		String webText = WebUI.getText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='SGD 8,862.75']"), FailureHandling.STOP_ON_FAILURE)
+		KeywordUtil.logInfo("Total Net Payment Excel = " + totalNetPayment)
+		
+		
+		//Change total net payment format from excel -> web
+		String formattedTotal = String.format("%,.2f", totalNetPayment)
+		
+		//Get Currency used based on data files
+		String curr = ""
+		for (int i = 0; i < listHashMapDTS.size(); i++) {
+			HashMap hashDTS = listHashMapDTS.get(i)
+			curr = hashDTS.get("Curr")
+		}
+		
+		//Combine currency and net payment as verification the correct amount
+		String webText = WebUI.getText(
+			new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='" + curr + " " + formattedTotal + "']"),
+			FailureHandling.STOP_ON_FAILURE
+		)
+		
+		KeywordUtil.logInfo("Net Payment Web = " + webText)
+		
 		String webNumberStr = webText.replaceAll("[^0-9.]", "")
 		double totalNetPaymentWeb = Double.parseDouble(webNumberStr)
-
+		
 		WebUI.verifyEqual(totalNetPayment, totalNetPaymentWeb)
+	}
+	
+	@And("User click Next to Release Payroll")
+	def releasePayroll() {
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "(//button[@class='btn btn-success btn-sm ml-auto'][normalize-space()='Next'])[1]"))
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Release Payslips']"))
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[@class='btn btn-success']"))
+		
+		//Verify new payroll is released using dynamic time stamp
+		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//p[starts-with(normalize-space(), 'Released on') and contains(., 'Click here to recall')]"),2)
+	}
+	
+	@Then("User Logout")
+	def userLogout() {
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[@class='flex text-sm rounded-full focus:outline-none']/img[1]"))
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Sign Out']"))
+		
+		//Verify user is logged out
+		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='id_email']"),2)
+		
+		WebUI.closeBrowser()
 	}
 }
 
