@@ -46,6 +46,7 @@ import cucumber.api.java.en.When
 
 import org.openqa.selenium.Keys
 
+import org.apache.commons.lang3.RandomStringUtils
 
 class createPayroll {
 	HandleTestData handleTestData = new HandleTestData()
@@ -55,10 +56,15 @@ class createPayroll {
 	String sheetName = 'Sheet1'
 
 	def createNewPayroll() {
+		String sheetNameTestName = 'Test Name'
+		String randomTestName = RandomStringUtils.randomAlphabetic(8)
+		
+		handleTestData.writeToCell(locatorExcel, sheetNameTestName, randomTestName, 0, 1)
+		
 		KeywordUtil.logInfo("No draft exists, creating one")
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Create New Payroll']"))
 		WebUI.takeFullPageScreenshot()
-		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='name']"), "Test 01")
+		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='name']"), randomTestName)
 		WebUI.takeFullPageScreenshot()
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Save']"))
 		WebUI.takeFullPageScreenshot()
@@ -217,31 +223,31 @@ class createPayroll {
 			getEmployeeName(hashDTS)
 			addEmployee()
 			releasePayroll()
-			
+
 			//Get Net Payment of Employee
 			String netPaymentStr = hashDTS.get("Net Payment").toString().replace(",", "").trim()
 			KeywordUtil.logInfo("Net Payment of " + hashDTS.get("Name").toString() + " = " + netPaymentStr)
 
 			//Change total net payment format from excel -> web
 			double number = Double.parseDouble(netPaymentStr)
-			
+
 			String formattedSingle = String.format("%,.2f", number)
-			
+
 			KeywordUtil.logInfo("Net Payment Excel Formatted = " + formattedSingle)
-	
+
 			//Get Currency used based on data files
 			String curr = ""
 			curr = hashDTS.get("Curr")
-			
+
 			String combinedNetPaymentExcel = curr + " " + formattedSingle
-	
+
 			//Combine currency and net payment as verification the correct amount
 			String webText = WebUI.getText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "(//td[starts-with(normalize-space(), 'SGD ')])[10]"))
-	
+
 			KeywordUtil.logInfo("Net Payment Web = " + webText)
-				
+
 			WebUI.verifyEqual(combinedNetPaymentExcel, webText)
-			
+
 			//Back to main team payroll page
 			WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Team Payroll']"))
 

@@ -151,5 +151,32 @@ public class HandleTestData {
 
 		return cellValue.trim();
 	}
+	
+	public void writeToCell(String pathFile, String sheetName, String value, int indexColumnDestination, int rowIndex) {
+		String pathData = RunConfiguration.getProjectDir() + "/Data Files/"
+		String pathFileTestData = pathData + pathFile
+		File fileExcel = new File(pathFileTestData)
+		FileInputStream fis = new FileInputStream(fileExcel)
+		XSSFWorkbook workbook = new XSSFWorkbook(fis)
+		XSSFSheet sheet = workbook.getSheet(sheetName)
+		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator()
+		KeywordUtil.logInfo("Open workbook")
+
+		try {
+			KeywordUtil.logInfo("NILAI CELL SEBELUM : " + sheet.getRow(rowIndex).getCell(indexColumnDestination).toString())
+			sheet.getRow(rowIndex).createCell(indexColumnDestination).setCellValue(value)
+			KeywordUtil.logInfo("NILAI CELL SETELAH : " + sheet.getRow(rowIndex).getCell(indexColumnDestination).toString())
+			workbook.setForceFormulaRecalculation(true)
+			evaluator.evaluateFormulaCell(sheet.getRow(rowIndex).getCell(indexColumnDestination))
+		} catch(Exception e) {
+			KeywordUtil.logInfo(e.getMessage())
+		} finally {
+			FileOutputStream fos = new FileOutputStream(fileExcel)
+			workbook.write(fos)
+			fos.close()
+			workbook.close()
+			KeywordUtil.logInfo("Close workbook")
+		}
+	}
 
 }
