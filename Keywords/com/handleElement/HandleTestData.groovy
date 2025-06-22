@@ -151,7 +151,7 @@ public class HandleTestData {
 
 		return cellValue.trim();
 	}
-	
+
 	public void writeToCell(String pathFile, String sheetName, String value, int indexColumnDestination, int rowIndex) {
 		String pathData = RunConfiguration.getProjectDir() + "/Data Files/"
 		String pathFileTestData = pathData + pathFile

@@ -55,6 +55,8 @@ class createPayroll {
 	String locatorExcel = 'Test Data.xlsx'
 	String sheetName = 'Sheet1'
 
+	List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
+
 	def createNewPayroll() {
 		String sheetNameTestName = 'Test Name'
 		String randomTestName = RandomStringUtils.randomAlphabetic(8)
@@ -117,8 +119,6 @@ class createPayroll {
 	//Iteration to fetch employee name based on data size in data file used (all)
 	@And("User search and select employee")
 	def searchEmployee() {
-		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
-
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
 			HashMap hashDTS = listHashMapDTS.get(i)
 			getEmployeeName(hashDTS)
@@ -127,38 +127,32 @@ class createPayroll {
 
 	@And("User click add employees")
 	def addEmployee() {
-		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
-		
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
 		WebUI.delay(2)
 		WebUI.takeFullPageScreenshot()
-		
+
 		//Check if payroll is generated for each employee
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
 			HashMap hashDTS = listHashMapDTS.get(i)
 			String employeeName = hashDTS.get("Name")
-			
+
 			// Verify element presence on page
 			boolean isPresent = WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "(//span[contains(text(),'" + employeeName + "')])[1]"), 10, FailureHandling.CONTINUE_ON_FAILURE)
-			
+
 			if (isPresent) {
 				KeywordUtil.logInfo("Employee name '" + employeeName + "' exists on page.")
 			} else {
 				KeywordUtil.logInfo("Employee name '" + employeeName + "' NOT found on page.")
 			}
 		}
-		
+
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex space-between p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
 		WebUI.delay(1)
 		WebUI.takeFullPageScreenshot()
 	}
-
-	//Get total net payment amount based on data file used
-	@And("User verify Net Payment total")
-	def verifyNetPayment() {
-		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
-
-		double totalNetPayment = 0.0
+	  
+	def totalingNetPayment() {
+		double totalNetPaymentExcel = 0.0
 
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
 			HashMap hashDTS = listHashMapDTS.get(i)
@@ -166,17 +160,17 @@ class createPayroll {
 
 			if (netPaymentStr.isNumber()) {
 				double netPayment = Double.parseDouble(netPaymentStr)
-				totalNetPayment += netPayment
+				totalNetPaymentExcel += netPayment
 				KeywordUtil.logInfo("Net Payment of " + hashDTS.get("Name").toString() + " = " + netPayment)
 			} else {
 				KeywordUtil.logInfo("Skipping invalid number = " + netPaymentStr)
 			}
 		}
 
-		KeywordUtil.logInfo("Total Net Payment Excel = " + totalNetPayment)
+		KeywordUtil.logInfo("Total Net Payment Excel = " + totalNetPaymentExcel)
 
-		//Change total net payment format from excel -> web
-		String formattedTotal = String.format("%,.2f", totalNetPayment)
+		//Change total net payment format from excel format to web format
+		String formattedTotal = String.format("%,.2f", totalNetPaymentExcel)
 
 		//Get Currency used based on data files
 		String curr = ""
@@ -196,7 +190,23 @@ class createPayroll {
 		String webNumberStr = webText.replaceAll("[^0-9.]", "")
 		double totalNetPaymentWeb = Double.parseDouble(webNumberStr)
 
-		WebUI.verifyEqual(totalNetPayment, totalNetPaymentWeb)
+		WebUI.verifyEqual(totalNetPaymentExcel, totalNetPaymentWeb)
+	  
+		  // Return both values in a map
+		  return [netPaymentExcel: totalNetPaymentExcel, netPaymentWeb: totalNetPaymentWeb]
+	  }
+
+	//Get total net payment amount based on data file used
+	@And("User verify Net Payment total")
+	def verifyNetPayment() {
+		def result = totalingNetPayment()
+		
+		double netPaymentExcel = result.netPaymentExcel
+		double netPaymentWeb = result.netPaymentWeb
+		
+		WebUI.verifyEqual(netPaymentExcel, netPaymentWeb)
+		
+		return result.netPaymentExcel
 	}
 
 	@And("User click Next to Release Payroll")
@@ -222,17 +232,17 @@ class createPayroll {
 	}
 
 	//========single
-	def getNetPaymentSingle(HashMap hashDTS) {
-		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
-
-		String netPaymentSingle = hashDTS.get("Net Payment")
-
-		return netPaymentSingle
-	}
+	//	def getNetPaymentSingle(HashMap hashDTS) {
+	//		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
+	//
+	//		String netPaymentSingle = hashDTS.get("Net Payment")
+	//
+	//		return netPaymentSingle
+	//	}
 
 	@When("User click Create New Payroll and input data single")
 	def callCreateNew() {
-		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
+		//		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
 
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
 			HashMap hashDTS = listHashMapDTS.get(i)
