@@ -54,9 +54,9 @@ class recallPayroll {
 	String locatorExcel = 'Test Data.xlsx'
 	String sheetName = 'Test Name'
 	String curr = "SGD"
-	
+
 	List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
-	
+
 	@When("User choose desired record to recall")
 	def chooseRecord() {
 		//Check if there is any draft, if does then delete the drafts. If doesn't, choose payroll to edit according to data in excel
@@ -81,50 +81,50 @@ class recallPayroll {
 				String testName = handleTestData.readFromCell(locatorExcel, sheetName, 0, 1)
 				WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//td[contains(text(), '${testName}')]"))
 				WebUI.takeFullPageScreenshot()
-				
+
 				KeywordUtil.logInfo("Test Name = " + testName)
 				break
 			}
 		}
 	}
-	
+
 	@And("User choose adjust payroll and choose employee")
 	def chooseAdjustment() {
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Click here']"))
 		WebUI.takeFullPageScreenshot()
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[@class='btn btn-success']"))
 		WebUI.takeFullPageScreenshot()
-		
+
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='Adjust Payroll']"))
 		WebUI.takeFullPageScreenshot()
 	}
-	
+
 	@And("User change employee data")
 	def changeEmployeeData() {
 		//Get employee data from excel
 		String employeeName = handleTestData.readFromCell(locatorExcel, sheetName, 1, 1)
 		String extraDutyAllowanceEdit = handleTestData.readFromCell(locatorExcel, sheetName, 2, 1)
-		
+
 		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), employeeName)
 		WebUI.takeFullPageScreenshot()
-		
+
 		KeywordUtil.logInfo("Employe Name to Change = " + employeeName)
 		KeywordUtil.logInfo("Extra Duty Allowance Change = " + extraDutyAllowanceEdit)
-		
+
 		WebUI.sendKeys(null, Keys.chord(Keys.ENTER))
 		WebUI.delay(2.5)
 		WebUI.takeFullPageScreenshot()
-		
+
 		WebUI.scrollToElement(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex space-between p-4 border-t border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"), 2)
 		WebUI.takeFullPageScreenshot()
 		WebUI.scrollToElement(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='table-responsive max-h-full  shadow-none border-0']//tr[2]/td[.='SGD']"), 2)
 		WebUI.takeFullPageScreenshot()
-		
+
 		//Edit employee data
 		WebUI.click(new TestObject('sgdInput').addProperty('xpath', ConditionType.EQUALS, "//table//tr[2]/td[4]//input"))
 		WebUI.delay(2.5)
 		WebUI.takeFullPageScreenshot()
-		
+
 		WebUI.sendKeys(new TestObject('sgdInput').addProperty('xpath', ConditionType.EQUALS, "//table//tr[2]/td[4]//input"), Keys.chord(Keys.CONTROL, 'a'))
 		WebUI.takeFullPageScreenshot()
 		WebUI.sendKeys(new TestObject('sgdInput').addProperty('xpath', ConditionType.EQUALS, "//table//tr[2]/td[4]//input"), Keys.chord(Keys.DELETE))
@@ -134,34 +134,34 @@ class recallPayroll {
 		WebUI.delay(1.5)
 		WebUI.takeFullPageScreenshot()
 	}
-	
+
 	@And("User save changed data")
 	def saveChanges() {
 		WebUI.click(new TestObject('sgdInput').addProperty('xpath', ConditionType.EQUALS, "//div[@class='table-responsive shadow-none mt-2']"))
 		WebUI.delay(0.5)
 		WebUI.takeFullPageScreenshot()
-		
+
 		WebUI.click(new TestObject('sgdInput').addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex space-between p-4 border-t border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
 		WebUI.takeFullPageScreenshot()
 		WebUI.click(new TestObject('sgdInput').addProperty('xpath', ConditionType.EQUALS, "(//button[@class='btn btn-success btn-sm ml-auto'][normalize-space()='Next'])[1]"))
 		WebUI.takeFullPageScreenshot()
 	}
-	
+
 	@And("User verify net payment")
 	def verifyNetPaymentChanged() {
 		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, 'Sheet1', true)
-		
+
 		WebUI.scrollToElement(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//th[.='Net Payment']"), 2)
 		KeywordUtil.logInfo("Net payment element is found")
 		WebUI.takeFullPageScreenshot()
-		
+
 		//Get total net payment from excel
 		double totalNetPaymentExcel = 0.0
-		
+
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
 			HashMap hashDTS = listHashMapDTS.get(i)
 			String netPaymentStr = hashDTS.get("Net Payment").toString().replace(",", "").trim()
-		
+
 			if (netPaymentStr.isNumber()) {
 				double netPayment = Double.parseDouble(netPaymentStr)
 				totalNetPaymentExcel += netPayment
@@ -171,80 +171,80 @@ class recallPayroll {
 			}
 		}
 		KeywordUtil.logInfo("Total Net Payment from Excel = " + totalNetPaymentExcel)
-		
+
 		//Add total payment in excel sheet1 and the changes made
 		double  extraDutyAllowanceEdit = handleTestData.readFromCell(locatorExcel, sheetName, 2, 1).toDouble()
 		double  paymentChanged = totalNetPaymentExcel + extraDutyAllowanceEdit
-		
+
 		KeywordUtil.logInfo("Current Total = " + paymentChanged)
-		
+
 		//Change total net payment format from excel format to web format
 		String formattedTotal = String.format("%,.2f", paymentChanged)
-		
+
 		KeywordUtil.logInfo("Formatted Current Total = " + paymentChanged)
-		
+
 		//Combine currency and net payment as verification the correct amount
 		String webText = WebUI.getText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//span[.='" + curr + " " + formattedTotal + "']"), FailureHandling.STOP_ON_FAILURE)
 		KeywordUtil.logInfo("Current Net Payment from Web = " + webText)
-		
+
 		String webNumberStr = webText.replaceAll("[^0-9.]", "")
-		
+
 		double totalNetPaymentWeb = Double.parseDouble(webNumberStr)
-		
+
 		WebUI.verifyEqual(paymentChanged, totalNetPaymentWeb)
 		WebUI.takeFullPageScreenshot()
 		KeywordUtil.logInfo("Net Payment Match!")
 	}
-	
+
 	@Then("User verify employees new payslip")
 	def verifyNewPayslip() {
 		//Release Payslips
 		WebUI.scrollToElement(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Team Payroll']"), 3)
 		WebUI.takeFullPageScreenshot()
-		
+
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Release Payslips']"))
 		WebUI.takeFullPageScreenshot()
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[@class='btn btn-success']"))
 		WebUI.takeFullPageScreenshot()
-		
+
 		//Verify new payroll is released using dynamic time stamp
 		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//p[starts-with(normalize-space(), 'Released on') and contains(., 'Click here to recall')]"),2)
 		WebUI.takeFullPageScreenshot()
-		
+
 		//Verify new pay slip of the employee
 		TestObject inputSearch = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']")
-		
+
 		WebUI.executeJavaScript(
-			"arguments[0].scrollIntoView({ behavior: 'auto', block: 'start' });",
-			Arrays.asList(WebUI.findWebElement(inputSearch, 10))
-		)
-		
+				"arguments[0].scrollIntoView({ behavior: 'auto', block: 'start' });",
+				Arrays.asList(WebUI.findWebElement(inputSearch, 10))
+				)
+
 		String employeeName = handleTestData.readFromCell(locatorExcel, sheetName, 1, 1)
 		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), employeeName)
 		WebUI.takeFullPageScreenshot()
 		WebUI.sendKeys(null, Keys.chord(Keys.ENTER))
 		WebUI.delay(3)
 		WebUI.takeFullPageScreenshot()
-		
+
 		String generatedNet = WebUI.getText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//tbody/tr[2]/td[5]/span"), FailureHandling.STOP_ON_FAILURE)
 		KeywordUtil.logInfo("Generated NetPayment = " + generatedNet)
-		
+
 		//Get payment changed excel
 		double  extraDutyAllowanceEdit = handleTestData.readFromCell(locatorExcel, sheetName, 2, 1).toDouble()
-		
+
 		KeywordUtil.logInfo("Current Total = " + extraDutyAllowanceEdit)
-		
+
 		//Change total net payment format from excel format to web format
 		String formattedTotal = String.format("%,.2f", extraDutyAllowanceEdit)
 		String addedCurrency = curr + " " + formattedTotal
-		
+
 		KeywordUtil.logInfo("Formatted Current Total = " + addedCurrency)
-		
+
 		//Verify match with excel
 		WebUI.verifyEqual(generatedNet, addedCurrency)
 		WebUI.takeFullPageScreenshot()
 		KeywordUtil.logInfo("Net Payment Changed!")
-		
+
 	}
 }
 

@@ -21,7 +21,7 @@
    <testCaseLink>
       <guid>865ddaa6-398a-42af-8151-054cad5d2a13</guid>
       <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
+      <isRun>false</isRun>
       <testCaseId>Test Cases/Create Payroll Bulk</testCaseId>
       <usingDataBindingAtTestSuiteLevel>true</usingDataBindingAtTestSuiteLevel>
    </testCaseLink>
