@@ -1,6 +1,6 @@
 Feature: Recall Payroll and edit employee salary data
 
-  @RecallPayroll
+  @RecallPayrollPositiveScenario
   Scenario Outline: User recall and edit employee summary
 	  Given User click payroll menu and choose team payroll
 	  When User choose desired record to recall

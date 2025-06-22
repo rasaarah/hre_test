@@ -1,7 +1,7 @@
 @CreatePayroll
 Feature: Create Payroll
 
-  @CreatePayrollPositiveFlowTotal
+  @CreatePayrollPositiveFlowBulk
   Scenario Outline: User create new payroll for existing employee
 	  Given User click payroll menu and choose team payroll
 	  When User click Create New Payroll and input data
