@@ -219,27 +219,6 @@ class createPayroll {
 		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//p[starts-with(normalize-space(), 'Released on') and contains(., 'Click here to recall')]"),2)
 	}
 
-
-	@Then("User Logout")
-	def userLogout() {
-		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[@class='flex text-sm rounded-full focus:outline-none']/img[1]"))
-		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Sign Out']"))
-
-		//Verify user is logged out
-		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='id_email']"),2)
-
-		WebUI.closeBrowser()
-	}
-
-	//========single
-	//	def getNetPaymentSingle(HashMap hashDTS) {
-	//		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
-	//
-	//		String netPaymentSingle = hashDTS.get("Net Payment")
-	//
-	//		return netPaymentSingle
-	//	}
-
 	@When("User click Create New Payroll and input data single")
 	def callCreateNew() {
 		//		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)

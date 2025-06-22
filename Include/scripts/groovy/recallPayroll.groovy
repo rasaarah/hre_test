@@ -180,7 +180,6 @@ class recallPayroll {
 		//Verify new pay slip of the employee
 		TestObject inputSearch = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']")
 		
-//		WebUI.scrollToElement(inputSearch, 2)
 		WebUI.executeJavaScript(
 			"arguments[0].scrollIntoView({ behavior: 'auto', block: 'start' });",
 			Arrays.asList(WebUI.findWebElement(inputSearch, 10))
