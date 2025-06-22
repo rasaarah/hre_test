@@ -92,8 +92,11 @@ class createPayroll {
 
 			if (WebUI.verifyElementPresent(approvalLimitField, 3, FailureHandling.OPTIONAL)) {
 				WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//tbody/tr[1]/td[8]/div[1]//*[name()='svg']//*[name()='path' and contains(@fill,'currentCol')]"))
+				WebUI.takeFullPageScreenshot()
 				WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[contains(.,'Delete Payroll')]"))
+				WebUI.takeFullPageScreenshot()
 				WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Delete']"))
+				WebUI.takeFullPageScreenshot()
 
 				elementFound = true
 				index++
@@ -150,8 +153,10 @@ class createPayroll {
 		WebUI.delay(1)
 		WebUI.takeFullPageScreenshot()
 	}
-	  
-	def totalingNetPayment() {
+
+	//Get total net payment amount based on data file used
+	@And("User verify Net Payment total")
+	def verifyNetPayment() {
 		double totalNetPaymentExcel = 0.0
 
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
@@ -189,39 +194,28 @@ class createPayroll {
 
 		String webNumberStr = webText.replaceAll("[^0-9.]", "")
 		double totalNetPaymentWeb = Double.parseDouble(webNumberStr)
+		WebUI.takeFullPageScreenshot()
 
 		WebUI.verifyEqual(totalNetPaymentExcel, totalNetPaymentWeb)
-	  
-		  // Return both values in a map
-		  return [netPaymentExcel: totalNetPaymentExcel, netPaymentWeb: totalNetPaymentWeb]
-	  }
-
-	//Get total net payment amount based on data file used
-	@And("User verify Net Payment total")
-	def verifyNetPayment() {
-		def result = totalingNetPayment()
-		
-		double netPaymentExcel = result.netPaymentExcel
-		double netPaymentWeb = result.netPaymentWeb
-		
-		WebUI.verifyEqual(netPaymentExcel, netPaymentWeb)
-		
-		return result.netPaymentExcel
 	}
 
 	@And("User click Next to Release Payroll")
 	def releasePayroll() {
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "(//button[@class='btn btn-success btn-sm ml-auto'][normalize-space()='Next'])[1]"))
+		WebUI.takeFullPageScreenshot()
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[normalize-space()='Release Payslips']"))
+		WebUI.takeFullPageScreenshot()
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[@class='btn btn-success']"))
+		WebUI.takeFullPageScreenshot()
 
 		//Verify new payroll is released using dynamic time stamp
 		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//p[starts-with(normalize-space(), 'Released on') and contains(., 'Click here to recall')]"),2)
+		WebUI.takeFullPageScreenshot()
 	}
 
 	@When("User click Create New Payroll and input data single")
 	def callCreateNew() {
-		//		List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
+		//List<HashMap> listHashMapDTS = handleTestData.readTestData(locatorExcel, sheetName, true)
 
 		for (int i = 0; i < listHashMapDTS.size(); i++) {
 			HashMap hashDTS = listHashMapDTS.get(i)
@@ -254,9 +248,11 @@ class createPayroll {
 			KeywordUtil.logInfo("Net Payment Web = " + webText)
 
 			WebUI.verifyEqual(combinedNetPaymentExcel, webText)
+			WebUI.takeFullPageScreenshot()
 
 			//Back to main team payroll page
 			WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Team Payroll']"))
+			WebUI.takeFullPageScreenshot()
 
 
 		}

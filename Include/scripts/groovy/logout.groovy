@@ -47,10 +47,13 @@ class logout {
 	@Then("User Logout")
 	def userLogout() {
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[@class='flex text-sm rounded-full focus:outline-none']/img[1]"))
+		WebUI.takeFullPageScreenshot()
 		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//a[.='Sign Out']"))
+		WebUI.takeFullPageScreenshot()
 
 		//Verify user is logged out
 		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='id_email']"),2)
+		WebUI.takeFullPageScreenshot()
 
 		WebUI.closeBrowser()
 	}
