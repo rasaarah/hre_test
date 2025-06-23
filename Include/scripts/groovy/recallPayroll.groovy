@@ -214,10 +214,7 @@ class recallPayroll {
 		//Verify new pay slip of the employee
 		TestObject inputSearch = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']")
 
-		WebUI.executeJavaScript(
-				"arguments[0].scrollIntoView({ behavior: 'auto', block: 'start' });",
-				Arrays.asList(WebUI.findWebElement(inputSearch, 10))
-				)
+		WebUI.executeJavaScript("arguments[0].scrollIntoView({ behavior: 'auto', block: 'start' });", Arrays.asList(WebUI.findWebElement(inputSearch, 10)))
 
 		String employeeName = handleTestData.readFromCell(locatorExcel, sheetName, 1, 1)
 		WebUI.setText(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='search']"), employeeName)
@@ -240,7 +237,7 @@ class recallPayroll {
 
 		KeywordUtil.logInfo("Formatted Current Total = " + addedCurrency)
 
-		//Verify match with excel
+		//Verify equal with excel
 		WebUI.verifyEqual(generatedNet, addedCurrency)
 		WebUI.takeFullPageScreenshot()
 		KeywordUtil.logInfo("Net Payment Changed!")
