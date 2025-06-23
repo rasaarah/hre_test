@@ -38,18 +38,21 @@ https://github.com/rasaarah/hre_test
 
 >Open the following file:  
 `hre_test/Data Files/Test Data.xlsx`
-![Excel Location](https://imgur.com/a/3FaCXeW)
+
+![Excel Location](https://i.imgur.com/0m3RZrl.png)
 
 - **Sheet1**  Sheet
   - You can update this sheet contain as needed but do not change the header or cell format
   - A new column named `Currency` is included for future use
-![Sheet 1](https://imgur.com/a/sgDrqqA)
+
+![Sheet 1](https://i.imgur.com/6rvkKVJ.png)
 
 - **Test Name**  Sheet
   - The `Test Name` column: will be auto-filled when the script runs.  **Do not leave this field empty**, or the script will fail.  
   - `Employee`column: Name of the employee to adjust in Scenario 2  
   - `Extra Duty Allowance`: Adjusted amount of extra duty allowance, leave it as a string
-![Test Name Sheet](https://imgur.com/a/jdJkQOk)
+
+![Test Name Sheet](https://i.imgur.com/kOU4cxI.png)
 
 > ⚠️ Save and close the Excel file before running the test.  
 > Opening excel file while running the script will cause error since I used a  FileInputStream library. Although I also use HashMap.
@@ -62,10 +65,13 @@ As comparison, HashMap won't cause an error if you open excel file while running
 - Launch Katalon Studio
 - Open the downloaded project folder (`hre_test`)
 - Navigate to the **Test Suite** section
-![Test Suite Navigate](https://imgur.com/a/YoVoJsH)
+
+![Test Suite Navigate](https://i.imgur.com/0wOH7tx.png)
 
 - Select and run the desired test scenarios
+
 ![Test Suite Run](https://imgur.com/a/lPHCmr4)
+
 1. Create and Run Payment (Bulk): Contained Scenario 1a
 2. Create and Run Payment (Single): Contained Scenario 1b, a variation scenario but with one-by-one iteration
 3. Recall and Rerun Payroll: Contained Scenario 2
@@ -73,7 +79,8 @@ As comparison, HashMap won't cause an error if you open excel file while running
 > Reports are only generated when test executed from the **Test Suite**.
 
 By default, Katalon will run test suite using Chrome driver. To choose another driver:
-![Test Suite Run Another Driver](https://imgur.com/a/USt79be)
+
+![Test Suite Run Another Driver](https://i.imgur.com/YRVjpmD.png)
 ---
 
 ### 5. Browser Recommendation
@@ -84,8 +91,9 @@ Run tests using **Google Chrome** for best compatibility and stability.
 - It also has stable WebDriver support
 
 Make sure your ChromeDriver (or other driver you prefered) is up-to-date:  Tools > Update WebDriver > Chrome
-![WebDriver Update](https://imgur.com/a/e2pnhnh)
-![WebDriver Updated](https://imgur.com/a/vPFdPix)
+
+![WebDriver Update](https://i.imgur.com/9TDuMS1.png)
+![WebDriver Updated](https://i.imgur.com/D6gVIfd.png)
 
 ---
 
@@ -95,7 +103,8 @@ After the test finishes:
 
 Reports are located at:  
 `hre_test/Reports/[timestamp]/[Test Suite name]/[timestamp]`
-![Report Location](https://imgur.com/a/wQq4LdM)
+
+![Report Location](https://i.imgur.com/cZijyHV.png)
 
 Each test run includes:
 
@@ -105,7 +114,8 @@ Each test run includes:
 - Screenshot images (`.png`)
 
 Make sure you check report settings: Project > Settings > Plugins > Report, set report format as desired
-![Report Location](https://imgur.com/a/pN4iGOz)
+
+![Driver Option](https://i.imgur.com/Vr0QeV8.png)
 ---
 
 ## Future Development Plans
@@ -117,6 +127,6 @@ Make sure you check report settings: Project > Settings > Plugins > Report, set 
 ---
 
 ## Evidence
-GDrive (contain success test execution in video format): https://bit.ly/hre_test_evidence
+GDrive (contain success test execution in video format): https://drive.google.com/drive/folders/1RHT96u7UoRQoxJFjdih8kYXBQO83_d--?usp=sharing
 
 ---
