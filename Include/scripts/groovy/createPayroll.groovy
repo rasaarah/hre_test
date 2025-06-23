@@ -212,6 +212,23 @@ class createPayroll {
 		WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//p[starts-with(normalize-space(), 'Released on') and contains(., 'Click here to recall')]"),2)
 		WebUI.takeFullPageScreenshot()
 	}
+	
+	def addEmployeeSingle(HashMap hashDTS) {
+		WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
+		WebUI.delay(2)
+		WebUI.takeFullPageScreenshot()
+		
+		String employeeName = hashDTS.get("Name")
+		
+		// Verify element presence on page
+		boolean isPresent = WebUI.verifyElementPresent(new TestObject().addProperty('xpath', ConditionType.EQUALS, "(//span[contains(text(),'" + employeeName + "')])[1]"), 10, FailureHandling.CONTINUE_ON_FAILURE)
+		
+		if (isPresent) {
+			KeywordUtil.logInfo("Employee name '" + employeeName + "' exists on page.")
+		} else {
+		KeywordUtil.logInfo("Employee name '" + employeeName + "' NOT found on page.")
+		}
+	}
 
 	@When("User click Create New Payroll and input data single")
 	def callCreateNew() {
@@ -222,7 +239,12 @@ class createPayroll {
 
 			clickCreateNew()
 			getEmployeeName(hashDTS)
-			addEmployee()
+			addEmployeeSingle(hashDTS)
+			
+			WebUI.click(new TestObject().addProperty('xpath', ConditionType.EQUALS, "//div[@class='flex space-between p-4 border-b border-gray-300']/button[@class='btn btn-success btn-sm ml-auto']"))
+			WebUI.delay(1)
+			WebUI.takeFullPageScreenshot()
+			
 			releasePayroll()
 
 			//Get Net Payment of Employee
