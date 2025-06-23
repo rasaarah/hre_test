@@ -70,7 +70,7 @@ As comparison, HashMap won't cause an error if you open excel file while running
 
 - Select and run the desired test scenarios
 
-![Test Suite Run](https://imgur.com/a/lPHCmr4)
+![Test Suite Run](https://i.imgur.com/DY6EOFU.png)
 
 1. Create and Run Payment (Bulk): Contained Scenario 1a
 2. Create and Run Payment (Single): Contained Scenario 1b, a variation scenario but with one-by-one iteration
@@ -106,8 +106,13 @@ Reports are located at:
 
 ![Report Location](https://i.imgur.com/cZijyHV.png)
 
-Each test run includes:
+![Report PDF](https://i.imgur.com/5LVzW3k.png)
 
+![Report HTML](https://i.imgur.com/kxmTHP0.png)
+
+![Report CSV](https://i.imgur.com/EDWyG0l.png)
+
+Each test run includes:
 - `.html` report
 - `.csv` report
 - `.pdf` report
@@ -127,6 +132,6 @@ Make sure you check report settings: Project > Settings > Plugins > Report, set 
 ---
 
 ## Evidence
-GDrive (contain success test execution in video format): https://drive.google.com/drive/folders/1RHT96u7UoRQoxJFjdih8kYXBQO83_d--?usp=sharing
+GDrive (contain success test execution in video format): https://bit.ly/hre_test_evidence
 
 ---
