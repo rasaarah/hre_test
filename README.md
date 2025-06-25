@@ -42,7 +42,7 @@ https://github.com/rasaarah/hre_test
 ![Excel Location](https://i.imgur.com/0m3RZrl.png)
 
 - **Sheet1**  Sheet
-  - You can update this sheet contain as needed but do not change the header or cell format
+  - You can update the content as needed but do not change the header or cell format
   - A new column named `Currency` is included for future use
 
 ![Sheet 1](https://i.imgur.com/6rvkKVJ.png)
